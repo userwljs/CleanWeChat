@@ -51,6 +51,10 @@ class App(tk.ttk.Frame):
         self.month_choose.current(12 - 1)
         self.month_choose.grid(column=2, row=5, padx=5, pady=5, sticky="w")
 
+        self.send_to_trash_var = tk.BooleanVar(value=False)
+        self.send_to_trash_checkbox = tk.ttk.Checkbutton(text="将文件发送到回收站", variable=self.send_to_trash_var)
+        self.send_to_trash_checkbox.grid(column=2, row=2, padx=5, pady=5, sticky="w")
+
         self.wx_folder = ""
         self.accounts = dict()
 
@@ -109,17 +113,7 @@ class App(tk.ttk.Frame):
             paths = [self.accounts[self.account_choose.get()]]
         paths = self.gen_paths(paths)
         paths = self.gen_paths_to_delete(paths, month_to_delete=months)
-        size = 0
-        for path in paths:
-            for dirpath, dirnames, filenames in os.walk(path):
-                for filename in filenames:
-                    fullpath = os.path.join(dirpath, filename)
-                    size += os.path.getsize(fullpath)
-                    try:
-                        os.chmod(fullpath, 0x1F0FF)
-                        os.remove(fullpath)
-                    except PermissionError:
-                        size -= os.path.getsize(fullpath)
+        size = utils.data_process.rm(paths, send_to_trash=self.send_to_trash_var.get())
         tk.messagebox.showinfo("清理完成", f"清理完成，清理了 {self.hum_convert(size)}")
 
     @staticmethod
