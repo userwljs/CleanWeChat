@@ -145,6 +145,12 @@ class App(tk.ttk.Frame):
 
 
 if __name__ == "__main__":
-    window = tk.Tk()
-    app = App(window)
-    app.mainloop()
+    # noinspection PyBroadException
+    try:
+        window = tk.Tk()
+        app = App(window)
+        app.mainloop()
+    except Exception as e:
+        print(e)
+        # noinspection PyTypeChecker
+        tk.messagebox.showerror("Error", e)
