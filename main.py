@@ -113,17 +113,8 @@ class App(tk.ttk.Frame):
             paths = [self.accounts[self.account_choose.get()]]
         paths = self.gen_paths(paths)
         paths = self.gen_paths_to_delete(paths, month_to_delete=months)
-        size = utils.data_process.rm(paths, send_to_trash=self.send_to_trash_var.get())
-        tk.messagebox.showinfo("清理完成", f"清理完成，清理了 {self.hum_convert(size)}")
-
-    @staticmethod
-    def hum_convert(value):
-        units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
-        size = 1024.0
-        for i in range(len(units)):
-            if (value / size) < 1:
-                return "%.2f %s" % (value, units[i])
-            value = value / size
+        utils.data_process.rm(paths, send_to_trash=self.send_to_trash_var.get())
+        tk.messagebox.showinfo("清理完成", "清理完成。")
 
     def gen_paths(self, paths: list[str]):
         result = list()

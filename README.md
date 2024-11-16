@@ -2,6 +2,8 @@
 
 本项目使用了：
 
-[CleanMyWechat](https://github.com/blackboxo/CleanMyWechat) 的部分文件，许可证副本见`res/licenses/LICENSE_CleanMyWechat.txt`
+[CleanMyWechat](https://github.com/blackboxo/CleanMyWechat) 的部分文件，许可证副本见
+`res/licenses/LICENSE_CleanMyWechat.txt`
 
-[material-design-icons](https://github.com/google/material-design-icons) 的部分文件，许可证副本见`res/licenses/LICENSE_material-design-icons.txt`
+[material-design-icons](https://github.com/google/material-design-icons) 的部分文件，许可证副本见
+`res/licenses/LICENSE_material-design-icons.txt`

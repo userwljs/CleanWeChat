@@ -52,39 +52,21 @@ def rm(paths: list[str], send_to_trash=False):
 
     :return : 删除的文件大小，单位为 B。"""
 
-    size = 0
     for path in paths:
         for dirpath, dirnames, filenames in os.walk(path):
             if send_to_trash:
                 try:
-                    file_size = sum_file_size(dirpath)
                     send2trash(dirpath)
-                    size += file_size
                 finally:
                     continue
             for filename in filenames:
                 fullpath = os.path.join(dirpath, filename)
-                file_size = os.path.getsize(fullpath)
                 try:
                     os.chmod(fullpath, 0x1F0FF)
                     os.remove(fullpath)
-                    size += file_size
                 except PermissionError:
                     continue
             try:
                 os.rmdir(dirpath)
             except (PermissionError, OSError):
                 continue
-    return size
-
-
-def sum_file_size(path: str):
-    """获取总文件大小
-    :param path: 文件夹路径
-
-    :return : 文件夹大小，单位为字节。"""
-    size = 0
-    for dirpath, dirnames, filenames in os.walk(path):
-        for filename in filenames:
-            size += os.path.getsize(os.path.join(dirpath, filename))
-    return size
