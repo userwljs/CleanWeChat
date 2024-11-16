@@ -31,20 +31,6 @@ def need_delete(folder_name: str, month_to_delete: int = 12) -> bool:
     return now_months - folder_months > month_to_delete
 
 
-def get_folders_to_delete(path: str, month_to_delete: int = 12) -> list[str]:
-    """给定一个微信存储的路径，返回一个包含路径的列表。
-    :param path: 微信存储文件夹的路径，如 “D:\\User\\Documents\\WeChat Files\\wxid_\\FileStorage\\File”
-    :param month_to_delete: 要移除多少月以前的文件夹
-    """
-    _l = os.listdir(path)
-    result = list()
-    for f in _l:
-        if not re.match("\\d{4}-\\d{2}", f) is None:
-            if need_delete(f, month_to_delete=month_to_delete):
-                result.append(os.path.join(path, f))
-    return result
-
-
 def rm(paths: list[str], send_to_trash=False):
     """递归删除文件夹。
     :param send_to_trash: 是否将文件发送至回收站
@@ -70,3 +56,36 @@ def rm(paths: list[str], send_to_trash=False):
                 os.rmdir(dirpath)
             except (PermissionError, OSError):
                 continue
+
+
+def gen_wx_filestorage_paths(paths: list[str]) -> list[dict[str, str]]:
+    """生成微信文件存储的细分路径
+    :param paths: 微信账户路径列表
+
+    :return 含有 File、Video、Cache 路径的字典列表。"""
+    result = list()
+    for path in paths:
+        temp = dict()
+        temp['file'] = os.path.join(path, "FileStorage\\File")
+        temp['video'] = os.path.join(path, "FileStorage\\Video")
+        temp['cache'] = os.path.join(path, "FileStorage\\Cache")
+        result.append(temp)
+    return result
+
+
+def gen_paths_to_delete(paths: list[str], month_to_delete: int) -> list[str]:
+    """生成要删除的文件夹路径列表
+    :param paths: FileStorage 细分路径列表
+    :param month_to_delete: 要删除多少月以前的文件夹
+
+    :return: 要删除的文件夹路径列表"""
+    result = list()
+    for path in paths:
+        folders = os.listdir(path)  # 按 YYYY-MM 格式命名的文件夹列表
+        for folder in folders:
+            fullpath = os.path.join(path, folder)
+            if (os.path.isdir(fullpath)
+                    and (not re.match("\\d{4}-\\d{2}", folder) is None)
+                    and need_delete(folder, month_to_delete=month_to_delete)):
+                result.append(fullpath)
+    return result

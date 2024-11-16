@@ -103,36 +103,27 @@ class App(tk.ttk.Frame):
         if len(self.accounts) == 0:
             tk.messagebox.showwarning("未找到待清理的账户", "未找到待清理的账户。")
             return
-        months = self.month_choose.current() + 1  # 要删除多少月以前的文件
+        month_to_delete = self.month_choose.current() + 1  # 要删除多少月以前的文件
         r = tk.messagebox.askyesno("即将执行清理",
-                                   f"将清理 {self.account_choose.get()} {months} 月以前的文件，确定要继续吗？")
+                                   f"将清理 {self.account_choose.get()} {month_to_delete} 月以前的文件，确定要继续吗？")
         if not r: return
-        if self.account_choose.current() == 0:
+        if self.account_choose.current() == 0:  # 获得待清理账户的路径
             paths = list(self.accounts.values())
         else:
             paths = [self.accounts[self.account_choose.get()]]
-        paths = self.gen_paths(paths)
-        paths = self.gen_paths_to_delete(paths, month_to_delete=months)
-        utils.data_process.rm(paths, send_to_trash=self.send_to_trash_var.get())
+        paths = utils.data_process.gen_wx_filestorage_paths(paths)  # 获得微信账户的 File、Video、Cache 路径
+        fs_list = list()  # 待清理文件夹路径
+        for account_fs in paths:  # 根据用户选项选出要清理的路径
+            if self.clean_file_var.get():
+                fs_list.append(account_fs["file"])
+            if self.clean_video_var.get():
+                fs_list.append(account_fs["video"])
+            if self.clean_cache_var.get():
+                fs_list.append(account_fs["cache"])
+        paths_to_delete = utils.data_process.gen_paths_to_delete(fs_list, month_to_delete)  # 获得待删除的文件夹路径
+        utils.data_process.rm(paths_to_delete, send_to_trash=self.send_to_trash_var.get())
         tk.messagebox.showinfo("清理完成", "清理完成。")
 
-    def gen_paths(self, paths: list[str]):
-        result = list()
-        for path in paths:
-            if self.clean_file_var.get():
-                result.append(os.path.join(path, "FileStorage\\File"))
-            if self.clean_video_var.get():
-                result.append(os.path.join(path, "FileStorage\\Video"))
-            if self.clean_cache_var.get():
-                result.append(os.path.join(path, "FileStorage\\Cache"))
-        return result
-
-    @staticmethod
-    def gen_paths_to_delete(paths: list[str], month_to_delete=12):
-        result = list()
-        for path in paths:
-            result += utils.data_process.get_folders_to_delete(path, month_to_delete=month_to_delete)
-        return result
 
 
 if __name__ == "__main__":
