@@ -19,7 +19,8 @@ class App(tk.ttk.Frame):
 
         self.window.title("Clean WeChat")
         self.window.geometry("400x200")
-        self.window.iconphoto(True, tk.PhotoImage(file="res/images/MaterialSymbolsMop_128x128.png"))
+        self.window.iconphoto(True, tk.PhotoImage(
+            file=os.path.join(os.path.dirname(__file__), "res/images/MaterialSymbolsMop_128x128.png")))
         self.window.resizable(False, False)
 
         self.account_choose = tk.ttk.Combobox(state="readonly")
