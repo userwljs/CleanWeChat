@@ -1,4 +1,5 @@
 import os.path
+import sys
 import tkinter as tk
 import tkinter.filedialog
 import tkinter.messagebox
@@ -7,8 +8,9 @@ from platform import system
 
 import utils
 
-if system() != "Windows":
+if system() != "Windows": # TODO: 支持 WeChat for Linux。
     tk.messagebox.showerror("不支持的系统", "此应用设计给 Windows 操作系统。")
+    sys.exit(1)
 
 
 class App(tk.ttk.Frame):
